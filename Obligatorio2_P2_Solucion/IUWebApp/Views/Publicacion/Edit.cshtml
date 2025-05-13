@@ -1,0 +1,18 @@
+﻿@model Dominio.Post
+
+<h1>Banear Posteo "@Model.Titulo"</h1>
+@{
+    ViewData["Title"] = "Banear Post";
+}
+<form method="post">
+    <span>Está seguro de banear este post <cite><strong>"@Model.Titulo"</strong></cite> del miembro <strong>@Model.Autor.Nombre @Model.Autor.Apellido</strong>?</span>
+    <input type="checkbox" name="Check" value="true" required />
+    <br />
+    <input class="btn btn-danger btn-sm mt-3" type="submit" value="Banear" />
+</form>
+
+<p class="alert-warning"> @ViewBag.msg </p>
+
+<div class="mt-3">
+    @Html.ActionLink("Atrás", "Index", "Publicacion", null, new { @class = "btn btn-outline-secondary btn-sm"})
+</div>

@@ -1,0 +1,89 @@
+﻿@using Dominio;
+
+@model IEnumerable<Dominio.Post>
+@{
+    ViewData["Title"] = "Publicaciones";
+}
+@if (Model != null)
+{
+    <h2 class="text-center">Lista de Posteos</h2>
+    @foreach (Post p in Model)
+    {
+        <section class="container mt-4 col-md-8">
+            <hr />
+            <article class="card">
+                <div class="card-header">
+                    <h4 class="card-title">@p.Titulo</h4>
+                    <p>@p.TiempoTranscurrido()</p>
+                    <div class="d-flex justify-content-between">
+                        <p title="Valor de Aceptación">VA: @p.CalcularValorAceptacion()</p>
+
+                        @if (p.Privado)
+                        {
+                            <p title="Solo los Amigos de @p.Autor.Nombre pueden ver este posteo">Privado</p>
+                        }
+                        else
+                        {
+                            <p title="Cualquier Usuario que tenga una cuenta puede ver este posteo">Publico</p>
+                        }
+
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">@p.Autor.Nombre @p.Autor.Apellido</h6>
+                    <p class="card-text">@p.Texto</p>
+
+                    <img src="@p.Imagen" class="card-img-top" alt="@p.Imagen">
+                </div>
+                <div class="card-footer">
+                    <div class="row d-flex align-items-center justify-content-between">
+
+                        @if (Context.Session.GetString("tipoUsuarioLogueado") == "Miembro")
+                        {
+                            @if (TempData["bloqueado"] == "Bloqueado")
+                            {
+                                <div class="mt-3">
+                                    <h6 class="msg alert-danger text-center">Usted no puede reaccionar a las publicaciones, está bloqueado!</h6>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-md-2 text-center">
+                                    @Html.ActionLink("Like", "Create", "Publicacion", new{idPublicacion=@p.Id, reaccion="like"}, new { @class = "btn btn-outline-success btn-sm " })
+                                </div>
+
+                                <div class="col-md-2 text-center">
+                                    @Html.ActionLink("Dislike", "Create", "Publicacion", new{idPublicacion=@p.Id, reaccion="dislike"}, new { @class = "btn btn-outline-danger btn-sm " })
+                                </div>
+                            }
+                        }
+                        
+                        <div class="col-md-4 text-center">
+                            @Html.ActionLink("Comentarios", "Details", "Publicacion", new{idPost=@p.Id}, new { @class = "btn btn-outline-secondary btn-sm" })
+
+                        </div>
+
+                        <div class="col-md-3 text-center">
+                            @if (Context.Session.GetString("tipoUsuarioLogueado") == "Administrador")
+                            {
+                                @if (p.Censurado)
+                                {
+                                    <span>Baneado</span>
+                                }
+                                else
+                                {
+                                    @Html.ActionLink("Banear", "Edit","Publicacion", new{idPost = p.Id},new{@class="btn btn-outline-danger btn-sm"})
+                                }
+                            }
+                        </div>
+                        <span class="text-center text-black-50">@p.GetReaccionesTipo("like") like | @p.GetReaccionesTipo("dislike") dislike</span>
+                    </div>
+                </div>
+            </article>
+        </section>
+    }
+}
+<hr />
+<div class="mt-3">
+    @Html.ActionLink("Atrás", "Index", "Home", null, new { @class = "btn btn-outline-secondary btn-sm"})
+</div>

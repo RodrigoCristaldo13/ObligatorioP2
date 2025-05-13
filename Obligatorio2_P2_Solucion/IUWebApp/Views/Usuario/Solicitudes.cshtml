@@ -1,0 +1,54 @@
+﻿@using Dominio;
+@model IEnumerable<Dominio.Invitacion>
+
+@{
+    ViewData["Title"] = "Solicitudes";
+}
+
+<h1 class="text-center">Solicitudes de Amistad</h1>
+<hr />
+@if (Model != null && Model.Count() != 0)
+{
+    <table class="table">
+        <tr>
+            <th>Miembro</th>
+            <th>Fecha</th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+
+        @foreach (Invitacion i in Model)
+        {
+            <tr>
+                <td>@i.MiembroSolicitante.Nombre @i.MiembroSolicitante.Apellido</td>
+                <td>@i.FechaSolicitud</td>
+                <td>@i.TiempoTranscurrido()</td>
+                @if (!i.MiembroSolicitado.Bloqueado)
+                {
+                    <td>@Html.ActionLink("Aceptar", "ProcesarSolicitud", "Usuario", new{respuesta="aceptar", idInvitacion = i.Id}, new { @class = "btn btn-outline-success btn-sm"})</td>
+                    <td>@Html.ActionLink("Rechazar", "ProcesarSolicitud", "Usuario", new{respuesta="rechazar", idInvitacion = i.Id}, new { @class = "btn btn-outline-danger btn-sm"})</td>
+                }
+                else
+                {
+                    <td><span class="alert-danger">Usted ha sido bloqueado, no puede aceptar ni rechazar solicitudes</span></td>
+                }
+
+            </tr>
+        }
+    </table>
+    
+}
+else
+{
+    <span>No tienes Solicitudes de amistad pendientes!</span>
+}
+@if (TempData["solicitud"] != null)
+{
+    <div class="alert alert-info mt-3">
+        <p>@TempData["solicitud"]</p>
+    </div>
+}
+<div class="mt-3">
+    @Html.ActionLink("Atrás", "Index", "Home", null, new { @class = "btn btn-outline-secondary btn-sm"})
+</div>

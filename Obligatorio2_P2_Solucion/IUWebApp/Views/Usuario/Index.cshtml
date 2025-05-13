@@ -1,0 +1,94 @@
+﻿@using Dominio;
+
+@model IEnumerable<Dominio.Miembro>;
+@if (Context.Session.GetString("tipoUsuarioLogueado") == "Administrador")
+{
+    ViewData["Title"] = "Miembros";
+
+    <h1 class="text-center">Lista de Miembros</h1>
+}
+else
+{
+    ViewData["Title"] = "Agregar Amigos";
+
+    <h1 class="text-center">Personas que quizás conozcas</h1>
+}
+<hr />
+
+@if (Model != null && Model.Count() != 0)
+{
+    <table class="table">
+
+        <tr>
+            @if (Context.Session.GetString("tipoUsuarioLogueado") == "Administrador")
+            {
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Fecha de Nacimiento</th>
+                <th>Correo</th>
+                <th>Estado</th>
+            }
+            else
+            {
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Solicitar</th>
+            }
+
+
+        </tr>
+
+
+        @foreach (Miembro m in Model)
+        {
+            @if (m != null)
+            {
+                <tr>
+                    @if (Context.Session.GetString("tipoUsuarioLogueado") == "Administrador")
+                    {
+                        <td>@m.Id</td>
+                        <td>@m.Apellido @m.Nombre</td>
+                        <td>@m.FechaNacimiento</td>
+                        <td>@m.Email</td>
+
+                        @if (m.Bloqueado)
+                        {
+                            <td>Bloqueado</td>
+                        }
+                        else
+                        {
+                            <td>@Html.ActionLink("Bloquear","Edit","Usuario", new{emailMiembro = m.Email}, new{@class="btn btn-outline-danger btn-sm"})</td>
+                        }
+                    }
+                    else
+                    {
+                        <td>@m.Nombre @m.Apellido</td>
+                        <td>@m.Email</td>
+                        <td>@Html.ActionLink("Enviar Solicitud","Solicitar","Usuario", new{emailMiembro = m.Email}, new{@class="btn btn-outline-primary btn-sm"})</td>
+                    }
+                </tr>
+            }
+        }
+    </table>
+
+
+}
+else
+{
+    <span>No hay Usuarios para mostrar</span>
+}
+@if (TempData["solicitudOk"] != null)
+{
+    <div class="alert-success mt-3">
+        <p>@TempData["solicitudOk"]</p>
+    </div>
+}
+else
+{
+    <div class="alert-danger mt-3">
+        <p>@TempData["solicitudError"]</p>
+    </div>
+}
+<div class="mt-3">
+    @Html.ActionLink("Atrás", "Index", "Home", null, new { @class = "btn btn-outline-secondary btn-sm"})
+</div>
